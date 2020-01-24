@@ -115,6 +115,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+api_key = 'nTJ9Cy6xyKJrdnQnM65qEBJdZ'
+
+api_secret_key = 'H9ZlGWWl4FIlUN2f67pn0Yo0yYIXZCkSbI6HP12zxT1X0s9EIW'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
