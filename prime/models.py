@@ -30,6 +30,7 @@ class Tweet(models.Model):
 class Log(models.Model):
     last_updated = models.DateTimeField(auto_now = True)
     message = models.TextField()
+    solved = models.BooleanField(default = False)
     
     def __str__(self):
         return(self.message)
