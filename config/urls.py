@@ -6,6 +6,6 @@ admin.site.site_header = 'Website Admin'
 
 urlpatterns = [
     path('abcd/admin/', admin.site.urls),
-    # path('api/profiles/', include('profiles.urls')),
+    path('api/prime/', include('prime.urls')),
     # path('api/messaging/', include('messaging.urls')),
 ]

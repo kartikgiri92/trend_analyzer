@@ -2,18 +2,20 @@ from django.conf.urls import include, url
 from django.urls import path
 from rest_framework import routers
 
-import profiles.views as pro_views
+import prime.views as prime_views
 
 router = routers.DefaultRouter()
 # router.register(r'add-client', sud_views.AddClient)
 
-app_name = 'profiles'
+app_name = 'prime'
 urlpatterns = [
     # url(r'^', include(router.urls)),
 
-    path('login/', pro_views.UserLogin.as_view()),
-    path('logout/', pro_views.UserLogout.as_view()),
-    path('create/', pro_views.CreateUser.as_view()),
+    path('foung/', prime_views.foung.as_view()),
+
+    # path('login/', pro_views.UserLogin.as_view()),
+    # path('logout/', pro_views.UserLogout.as_view()),
+    # path('create/', pro_views.CreateUser.as_view()),
     # path('client/create/<int:id>/', sud_views.ClientDetail.as_view()),
 
     # path('list-subjects/', sud_views.ListSubject.as_view()),

@@ -1,4 +1,5 @@
 import prime.models as prime_models
+import prime.utils as prime_utils
 import prime.serializers as prime_serializers
 
 import time
@@ -16,3 +17,8 @@ from rest_framework.generics import (ListAPIView,
 # print(len(connection.queries))
 # reset_queries()
 
+class foung(GenericAPIView):
+
+
+    def get(self, request, *args, **kwargs):
+        return Response(prime_utils.prime_func(request))

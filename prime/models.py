@@ -22,7 +22,7 @@ class Tweet(models.Model):
     retweet_count = models.TextField()
     favourite_count = models.TextField()
     oembed_html = models.TextField()
-    compund_value = models.IntegerField(default = 0)
+    compound_value = models.IntegerField(default = 0)
     
     def __str__(self):
         return(self.text)
