@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class Trend(models.Model):
     url = models.TextField()
-    name = models.TextField()
+    name = models.TextField(unique = True)
     query = models.TextField()
     positive_percentage = models.IntegerField(default = 0)
     neutral_percentage = models.IntegerField(default = 0)
