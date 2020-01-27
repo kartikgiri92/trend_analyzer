@@ -13,9 +13,13 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # print(len(connection.queries))
 # reset_queries()
 
-# Alter this value to make change in number of Top Trending Trends
-top_trending_quantity = 10
-tweets_fetch_quantity = 30
+# Info
+# trends_fetch_quantity always [1, 50]
+# tweets_fetch_quantity always [1, 100]
+top_trending_quantity = 10  # Top Trending should always be <= Trends Fetch Quantity
+trends_fetch_quantity = 20  # Top Trending should always be <= Trends Fetch Quantity
+tweets_fetch_quantity = 50
+
 analyser = SentimentIntensityAnalyzer()
 
 def select_top_trending(length_of_current_trends, current_trends_list, top_trending_quantity):
@@ -91,9 +95,13 @@ def prime_func(request):  # Return Dict object
         prime_models.Log.objects.create(message = 'Error While Fetching Trends')
         return({'message' : 'Error While Fetching Trends', 'status' : False})
 
-    if(length_of_current_trends < top_trending_quantity):
+    if((length_of_current_trends < top_trending_quantity) or (length_of_current_trends < trends_fetch_quantity)
+            or (top_trending_quantity > trends_fetch_quantity)):
         prime_models.Log.objects.create(message = 'Length of Current Trends less than Needed Quantity')
         return({'message' : 'Length of Current Trends less than Needed Quantity', 'status' : False})
+    else:
+        current_trends_list = current_trends_list[0: trends_fetch_quantity]
+        length_of_current_trends = len(current_trends_list)
 
     top_trending_indexes = select_top_trending(length_of_current_trends, current_trends_list, top_trending_quantity)
 
@@ -144,7 +152,7 @@ def prime_func(request):  # Return Dict object
                 try:
                     oem_html = api.get_oembed(id = tmp_tweet.id_str, omit_script = True)['html']
                 except tweepy.TweepError:
-                    prime_models.Log.objects.create(message = 'OEM NOT GENERATED for tweet {}'.format(tmp_tweet.id_str))
+                    # prime_models.Log.objects.create(message = 'OEM NOT GENERATED for tweet {}'.format(tmp_tweet.id_str))
                     continue
                 tweet_obj = prime_models.Tweet(text = tweet_txt, trend = trend_obj,
                         id_str = tmp_tweet.id_str, retweet_count = tmp_tweet.retweet_count,
