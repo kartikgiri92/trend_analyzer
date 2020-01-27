@@ -4,7 +4,7 @@ import prime.models as prime_models
 # Register your models here.
 
 class TrendAdmin(admin.ModelAdmin):
-    list_display = ('name', 'total_tweet_volume',
+    list_display = ('id', 'name', 'total_tweet_volume',
         'num_positive', 'num_neutral', 'num_negative', 
         'is_top_trending', 'last_updated')
 

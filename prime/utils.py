@@ -43,10 +43,10 @@ def select_top_trending(length_of_current_trends, current_trends_list, top_trend
     return(return_value)
 
 def sentiment_classify(compound_value):
-    if(compound_value >= 0.5):
+    if(compound_value > 0.5):
         # Positive
         return(1, 0, 0)
-    if(compound_value <= -0.5):
+    if(compound_value < -0.5):
         # Negative
         return(0, 0, 1)
     else:
