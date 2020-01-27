@@ -18,29 +18,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # tweets_fetch_quantity always [1, 100]
 top_trending_quantity = 10  # Top Trending should always be <= Trends Fetch Quantity
 trends_fetch_quantity = 20  # Top Trending should always be <= Trends Fetch Quantity
-tweets_fetch_quantity = 50
+tweets_fetch_quantity = 40
 
 analyser = SentimentIntensityAnalyzer()
-
-def select_top_trending(length_of_current_trends, current_trends_list, top_trending_quantity):
-    volume_given, volume_not_given = [], []
-    return_value = [0 for i in range(length_of_current_trends)]
-    temp = {}
-    for i in range(0,len(current_trends_list)):
-        if(current_trends_list[i]['tweet_volume']):
-            volume_given.append(current_trends_list[i])
-        else:
-            volume_not_given.append(current_trends_list[i])
-        temp[current_trends_list[i]['name']] = i
-
-    if(len(volume_given) < top_trending_quantity):
-        volume_given += volume_not_given[0 :  top_trending_quantity - len(volume_given)]
-    else:
-        volume_given = volume_given[0 : top_trending_quantity]
-
-    for i in volume_given:
-        return_value[temp[i['name']]] = 1
-    return(return_value)
 
 def sentiment_classify(compound_value):
     if(compound_value > 0.5):
@@ -102,10 +82,6 @@ def prime_func(request):  # Return Dict object
     else:
         current_trends_list = current_trends_list[0: trends_fetch_quantity]
         length_of_current_trends = len(current_trends_list)
-
-    top_trending_indexes = select_top_trending(length_of_current_trends, current_trends_list, top_trending_quantity)
-
-    prime_models.Trend.objects.filter(is_top_trending = True).update(is_top_trending = False)
 
     for i in range(length_of_current_trends):
         
@@ -170,12 +146,25 @@ def prime_func(request):  # Return Dict object
 
         if(current_trends_list[i]['tweet_volume']):
             trend_obj.total_tweet_volume = current_trends_list[i]['tweet_volume']
-
-        if(not(trend_obj.num_positive + trend_obj.num_negative + trend_obj.num_neutral)):
-            trend_obj.is_top_trending = 0 # Trend With zero tweets should be inactive
-        else:
-            trend_obj.is_top_trending = top_trending_indexes[i]
         trend_obj.save()
+
+    # Delete Trends With No Tweets
+    del_trends = list(prime_models.Trend.objects.all().prefetch_related('tweet_set'))
+    for tmp_obj in del_trends:
+        if(not(len(tmp_obj.tweet_set.all()))):
+            tmp_obj.delete()
+
+    #  Mark Last Updated as Trending
+    all_trends = list(prime_models.Trend.objects.all().order_by('-last_updated'))
+    var_index = min(len(all_trends), top_trending_quantity)
+    for i in range(0, var_index):
+        all_trends[i].is_top_trending = True
+        all_trends[i].save()
+    # Mark Rest as Not Trending
+    for i in range(var_index, len(all_trends)):
+        if(all_trends[i].is_top_trending):
+            all_trends[i].is_top_trending = False
+            all_trends[i].save()
 
     if(config_settings.DEBUG):
         print(len(connection.queries)) # To know number of Queries

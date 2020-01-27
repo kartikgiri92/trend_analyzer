@@ -45,17 +45,17 @@ class GetTrend(ListAPIView, RetrieveAPIView):
 
         if(data['positive_percentage'] >= 1):
             temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__gt = 0.5).\
-                order_by('favourite_count', 'retweet_count'))
+                order_by('-favourite_count', '-retweet_count'))
             min_index = min(len(temp), 5)
             data['positive_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
         if(data['negative_percentage'] >= 1):
             temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__lt = -0.5).\
-                order_by('favourite_count', 'retweet_count'))
+                order_by('-favourite_count', '-retweet_count'))
             min_index = min(len(temp), 5)
             data['negative_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
         if(data['neutral_percentage'] >= 1):
             temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__range = (-0.5, 0.5)).\
-                order_by('favourite_count', 'retweet_count'))
+                order_by('-favourite_count', '-retweet_count'))
             min_index = min(len(temp), 5)
             data['neutral_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
 
