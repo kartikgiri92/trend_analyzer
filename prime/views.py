@@ -18,7 +18,6 @@ from rest_framework.generics import (ListAPIView,
 # reset_queries()
 
 class foung(GenericAPIView):
-
-
+    # This API is called only through CRON
     def get(self, request, *args, **kwargs):
         return Response(prime_utils.prime_func(request))

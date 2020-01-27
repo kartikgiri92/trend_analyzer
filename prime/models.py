@@ -5,9 +5,9 @@ class Trend(models.Model):
     url = models.TextField()
     name = models.TextField(unique = True)
     query = models.TextField()
-    positive_percentage = models.IntegerField(default = 0)
-    neutral_percentage = models.IntegerField(default = 0)
-    negative_percentage = models.IntegerField(default = 0)
+    num_positive = models.IntegerField(default = 0)
+    num_neutral = models.IntegerField(default = 0)
+    num_negative = models.IntegerField(default = 0)
     total_tweet_volume = models.TextField(default = '0')
     is_top_trending = models.BooleanField(default = False)
     last_updated = models.DateTimeField(auto_now = True)
@@ -17,12 +17,12 @@ class Trend(models.Model):
 
 class Tweet(models.Model):
     trend = models.ForeignKey(Trend, on_delete=models.CASCADE)
-    tweet_id = models.TextField()
+    id_str = models.TextField(unique = True)
     text = models.TextField()
     retweet_count = models.TextField()
     favourite_count = models.TextField()
     oembed_html = models.TextField()
-    compound_value = models.IntegerField(default = 0)
+    compound_value = models.FloatField(default = 0)
     
     def __str__(self):
         return(self.text)

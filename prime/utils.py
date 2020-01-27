@@ -5,7 +5,7 @@ import prime.models as prime_models
 import config.settings as config_settings
 
 from prime.woeid_list import India
-
+from django.db import IntegrityError
 from django.db import connection, reset_queries
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -15,6 +15,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Alter this value to make change in number of Top Trending Trends
 top_trending_quantity = 10
+tweets_fetch_quantity = 30
 analyser = SentimentIntensityAnalyzer()
 
 def select_top_trending(length_of_current_trends, current_trends_list, top_trending_quantity):
@@ -37,6 +38,18 @@ def select_top_trending(length_of_current_trends, current_trends_list, top_trend
         return_value[temp[i['name']]] = 1
     return(return_value)
 
+def sentiment_classify(compound_value):
+    if(compound_value >= 0.5):
+        # Positive
+        return(1, 0, 0)
+    if(compound_value <= -0.5):
+        # Negative
+        return(0, 0, 1)
+    else:
+        # Neutral
+        return(0, 1, 0)
+
+
 def remove_pattern(input_txt, pattern):
     r = re.findall(pattern, input_txt)
     for i in r:
@@ -56,6 +69,8 @@ def data_preprocessing(input_txt):
     return(input_txt)
 
 def prime_func(request):  # Return Dict object
+    if(config_settings.DEBUG):
+        reset_queries() # To know number of Queries
     
     # Authenticating API keys
     try:
@@ -65,9 +80,10 @@ def prime_func(request):  # Return Dict object
         prime_models.Log.objects.create(message = 'During keys Auth')
         return({'message' : 'Error while Authenticating keys', 'status' : False})
 
-    # Fetch 50 current Trends
+    # Fetch current Trends
     try:
         # List containing trends as dict objects
+        # The api always fetch 50 trends
         current_trends_list = api.trends_place(id = India)[0]['trends']
         length_of_current_trends = len(current_trends_list)
 
@@ -84,43 +100,76 @@ def prime_func(request):  # Return Dict object
     prime_models.Trend.objects.filter(is_top_trending = True).update(is_top_trending = False)
 
     for i in range(length_of_current_trends):
-        trend_obj, created = prime_models.Trend.objects.get_or_create(name = current_trends_list[i]['name'],
+        
+        try:
+            trend_obj, created = prime_models.Trend.objects.get_or_create(name = current_trends_list[i]['name'],
                     url = current_trends_list[i]['url'], query = current_trends_list[i]['query'])
-        tweets_obj_list = []
-        if(created):
-            try :
-                current_tweets_list = api.search(q = trend_obj.query,
-                        result_type = 'popular', count = 50, 
-                        include_entities = False, lang = 'en')
-                if(len(current_tweets_list) < 25):
-                    current_tweets_list = api.search(q = trend_obj.query,
-                        result_type = 'mixed', count = 50, 
-                        include_entities = False, lang = 'en')
-            except tweepy.TweepError:
-                prime_models.Log.objects.create(message = 'Error While Fetching Tweets for topic {}'.format(trend_obj.name))
-                trend_obj.delete()
-                continue
+        except IntegrityError:
+            prime_models.Log.objects.create(message = 'Unique Constraint Failed for Unique Trend Name for trend {}'.\
+                format(current_trends_list[i]['name']))
+            continue
 
-            for tmp_tweet in current_tweets_list:
-                tweet_txt = data_preprocessing(tmp_tweet.text)
+        try :
+            current_tweets_list = api.search(q = trend_obj.query,
+                result_type = 'popular', count = tweets_fetch_quantity, 
+                include_entities = False, lang = 'en', tweet_mode = 'extended')
+            if(len(current_tweets_list) < (tweets_fetch_quantity//2)):
+                current_tweets_list = api.search(q = trend_obj.query, 
+                    result_type = 'mixed', count = tweets_fetch_quantity, 
+                    include_entities = False, lang = 'en', tweet_mode = 'extended')
+            if(len(current_tweets_list) == 0):
+                prime_models.Log.objects.create(message = 'Zero Tweets Fetched for trend {}'.format(trend_obj.name))
+                continue
+        except tweepy.TweepError:
+            prime_models.Log.objects.create(message = 'Error While Fetching Tweets for trend {}'.format(trend_obj.name))
+            continue
+
+        new_tweets_obj_list = []
+        id_str_list = [tmp_tweet.id_str for tmp_tweet in current_tweets_list]
+        existing_tweets_index = 0
+        existing_tweets = list(prime_models.Tweet.objects.filter(trend = trend_obj, id_str__in = id_str_list))
+
+        for tmp_tweet in current_tweets_list:
+            # Tweet obj already Exist
+            if((len(existing_tweets) > existing_tweets_index) and \
+                (tmp_tweet.id_str == existing_tweets[existing_tweets_index].id_str)):
+                existing_tweets[existing_tweets_index].retweet_count = tmp_tweet.retweet_count
+                existing_tweets[existing_tweets_index].favourite_count = tmp_tweet.favorite_count
+                existing_tweets[existing_tweets_index].save()
+                existing_tweets_index += 1
+            else:
+                # New Tweet obj will be created
+                tweet_txt = data_preprocessing(tmp_tweet.full_text)
                 cmpd_value = analyser.polarity_scores(tweet_txt)['compound']
                 try:
                     oem_html = api.get_oembed(id = tmp_tweet.id_str, omit_script = True)['html']
                 except tweepy.TweepError:
                     prime_models.Log.objects.create(message = 'OEM NOT GENERATED for tweet {}'.format(tmp_tweet.id_str))
                     continue
-                tweet_obj = Tweet(text = tweet_txt, trend = trend_obj,
-                        tweet_id = tmp_tweet.id_str, retweet_count = tmp_tweet.retweet_count,
+                tweet_obj = prime_models.Tweet(text = tweet_txt, trend = trend_obj,
+                        id_str = tmp_tweet.id_str, retweet_count = tmp_tweet.retweet_count,
                         favourite_count = tmp_tweet.favorite_count,
                         oembed_html = oem_html, compound_value = cmpd_value)
-                tweets_obj_list.append(tweet_obj)
+                tmp_pst, tmp_neut, tmp_neg = sentiment_classify(cmpd_value)
+                trend_obj.num_positive += tmp_pst
+                trend_obj.num_neutral += tmp_neut
+                trend_obj.num_negative += tmp_neg
+                new_tweets_obj_list.append(tweet_obj)
+        try:
+            prime_models.Tweet.objects.bulk_create(new_tweets_obj_list)
+        except IntegrityError:
+            prime_models.Log.objects.create(message = 'Unique Constraint Failed for Unique Tweet Id for trend {}'.format(trend_obj.name))
 
+        if(current_trends_list[i]['tweet_volume']):
+            trend_obj.total_tweet_volume = current_trends_list[i]['tweet_volume']
+
+        if(not(trend_obj.num_positive + trend_obj.num_negative + trend_obj.num_neutral)):
+            trend_obj.is_top_trending = 0 # Trend With zero tweets should be inactive
         else:
-            a = 2
+            trend_obj.is_top_trending = top_trending_indexes[i]
+        trend_obj.save()
 
-        break
-
-        # Update Trend Obj Other Fields
-
-
+    if(config_settings.DEBUG):
+        print(len(connection.queries)) # To know number of Queries
+        reset_queries()
     return({'message' : 'Successfull data fetching, cleaning and updating', 'status' : True})
