@@ -24,7 +24,7 @@ class foung(GenericAPIView):
 
 class GetTrend(ListAPIView, RetrieveAPIView):
     lookup_field = 'id'
-    queryset = prime_models.Trend.objects.all()
+    queryset = prime_models.Trend.objects.all().order_by('-last_updated')
     serializer_class = prime_serializers.BaseTrendSerializer
 
     def retrieve(self, request, *args, **kwargs):
