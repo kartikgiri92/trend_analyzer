@@ -148,8 +148,15 @@ def prime_func(request):  # Return Dict object
 
         if(current_trends_list[i]['tweet_volume']):
             trend_obj.total_tweet_volume = current_trends_list[i]['tweet_volume']
-        if(trend_obj.name[0] == '#'):   trend_obj.name = trend_obj.name[1:]
-        trend_obj.save()
+             
+        try:
+            if(trend_obj.name[0] == '#'):
+                trend_obj.name = trend_obj.name[1:]
+            trend_obj.save()
+        except IntegrityError:
+            prime_models.Log.objects.create(message = 'Unique Constraint Failed for Unique Trend Name for trend {}'.\
+                format(current_trends_list[i]['name']))
+            trend_obj.delete()
 
     # Delete Trends With No Tweets
     del_trends = list(prime_models.Trend.objects.all().prefetch_related('tweet_set'))
