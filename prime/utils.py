@@ -86,7 +86,7 @@ def prime_func(request):  # Return Dict object
         length_of_current_trends = len(current_trends_list)
 
     for i in range(length_of_current_trends):
-        
+        if(current_trends_list[i]['name'][0] == '#'):   current_trends_list[i]['name'] = current_trends_list[i]['name'][1:]
         try:
             trend_obj, created = prime_models.Trend.objects.get_or_create(name = current_trends_list[i]['name'],
                     url = current_trends_list[i]['url'], query = current_trends_list[i]['query'])
