@@ -5,6 +5,7 @@ import prime.models as prime_models
 import config.settings as config_settings
 
 from prime.woeid_list import India
+from random import shuffle
 from django.db import IntegrityError
 from django.db import connection, reset_queries
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -17,8 +18,8 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # trends_fetch_quantity always [1, 50]
 # tweets_fetch_quantity always [1, 100]
 top_trending_quantity = 10  # Top Trending should always be <= Trends Fetch Quantity
-trends_fetch_quantity = 20  # Top Trending should always be <= Trends Fetch Quantity
-tweets_fetch_quantity = 40
+trends_fetch_quantity = 25  # Top Trending should always be <= Trends Fetch Quantity
+tweets_fetch_quantity = 50
 
 analyser = SentimentIntensityAnalyzer()
 
@@ -80,6 +81,7 @@ def prime_func(request):  # Return Dict object
         prime_models.Log.objects.create(message = 'Length of Current Trends less than Needed Quantity')
         return({'message' : 'Length of Current Trends less than Needed Quantity', 'status' : False})
     else:
+        shuffle(current_trends_list)
         current_trends_list = current_trends_list[0: trends_fetch_quantity]
         length_of_current_trends = len(current_trends_list)
 
@@ -146,6 +148,7 @@ def prime_func(request):  # Return Dict object
 
         if(current_trends_list[i]['tweet_volume']):
             trend_obj.total_tweet_volume = current_trends_list[i]['tweet_volume']
+        if(trend_obj.name[0] == '#'):   trend_obj.name = trend_obj.name[1:]
         trend_obj.save()
 
     # Delete Trends With No Tweets
