@@ -18,7 +18,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # trends_fetch_quantity always [1, 50]
 # tweets_fetch_quantity always [1, 100]
 top_trending_quantity = 10  # Top Trending should always be <= Trends Fetch Quantity
-trends_fetch_quantity = 30  # Top Trending should always be <= Trends Fetch Quantity
+trends_fetch_quantity = 20  # Top Trending should always be <= Trends Fetch Quantity
 tweets_fetch_quantity = 80
 
 positivie_threshold = 0.3
@@ -27,15 +27,16 @@ negative_threshold = -0.3
 analyser = SentimentIntensityAnalyzer()
 
 def sentiment_classify(compound_value):
+    # return(positive, negative, neutral)
     if(compound_value > positivie_threshold):
         # Positive
         return(1, 0, 0)
     if(compound_value < negative_threshold):
         # Negative
-        return(0, 0, 1)
+        return(0, 1, 0)
     else:
         # Neutral
-        return(0, 1, 0)
+        return(0, 0, 1)
 
 
 def remove_pattern(input_txt, pattern):
@@ -115,17 +116,18 @@ def prime_func(request):  # Return Dict object
 
         new_tweets_obj_list = []
         id_str_list = [tmp_tweet.id_str for tmp_tweet in current_tweets_list]
-        existing_tweets_index = 0
+        number_of_positive, number_of_negative, number_of_neutral = 0, 0, 0
+        existing_tweets_dic = {}
         existing_tweets = list(prime_models.Tweet.objects.filter(trend = trend_obj, id_str__in = id_str_list))
+        for i in existing_tweets:
+            existing_tweets_dic[i.id_str] = i
 
         for tmp_tweet in current_tweets_list:
             # Tweet obj already Exist
-            if((len(existing_tweets) > existing_tweets_index) and \
-                (tmp_tweet.id_str == existing_tweets[existing_tweets_index].id_str)):
-                existing_tweets[existing_tweets_index].retweet_count = tmp_tweet.retweet_count
-                existing_tweets[existing_tweets_index].favourite_count = tmp_tweet.favorite_count
-                existing_tweets[existing_tweets_index].save()
-                existing_tweets_index += 1
+            if(tmp_tweet.id_str in existing_tweets_dic):
+                existing_tweets_dic[tmp_tweet.id_str].retweet_count = tmp_tweet.retweet_count
+                existing_tweets_dic[tmp_tweet.id_str].favourite_count = tmp_tweet.favorite_count
+                existing_tweets_dic[tmp_tweet.id_str].save()
             else:
                 # New Tweet obj will be created
                 tweet_txt = data_preprocessing(tmp_tweet.full_text)
@@ -139,13 +141,16 @@ def prime_func(request):  # Return Dict object
                         id_str = tmp_tweet.id_str, retweet_count = tmp_tweet.retweet_count,
                         favourite_count = tmp_tweet.favorite_count,
                         oembed_html = oem_html, compound_value = cmpd_value)
-                tmp_pst, tmp_neut, tmp_neg = sentiment_classify(cmpd_value)
-                trend_obj.num_positive += tmp_pst
-                trend_obj.num_neutral += tmp_neut
-                trend_obj.num_negative += tmp_neg
+                tmp_pst, tmp_neg, tmp_neut = sentiment_classify(cmpd_value)
+                number_of_positive += tmp_pst
+                number_of_negative += tmp_neg
+                number_of_neutral += tmp_neut
                 new_tweets_obj_list.append(tweet_obj)
         try:
             prime_models.Tweet.objects.bulk_create(new_tweets_obj_list)
+            trend_obj.num_positive += number_of_positive
+            trend_obj.num_negative += number_of_negative
+            trend_obj.num_neutral += number_of_neutral
         except IntegrityError:
             prime_models.Log.objects.create(message = 'Unique Constraint Failed for Unique Tweet Id for trend {}'.format(trend_obj.name))
 

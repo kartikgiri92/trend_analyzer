@@ -1,5 +1,17 @@
+var temp = document.querySelector("#temp")
+console.log(temp.children[0].innerHtml)
+
+
+
+
+
+
+
+
+
 var active_trend_url = window.location.origin + "/api/prime/get-active-trend/";
 var fetch_trend_by_id_url = window.location.origin + "/api/prime/get-trend/";
+
 
 const get_active_trend = async () => {
     let response = await fetch(active_trend_url, {
