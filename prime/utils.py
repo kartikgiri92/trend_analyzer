@@ -18,7 +18,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # trends_fetch_quantity always [1, 50]
 # tweets_fetch_quantity always [1, 100]
 top_trending_quantity = 10  # Top Trending should always be <= Trends Fetch Quantity
-trends_fetch_quantity = 20  # Top Trending should always be <= Trends Fetch Quantity
+trends_fetch_quantity = 25  # Top Trending should always be <= Trends Fetch Quantity
 tweets_fetch_quantity = 80
 
 positivie_threshold = 0.3
@@ -119,8 +119,8 @@ def prime_func(request):  # Return Dict object
         number_of_positive, number_of_negative, number_of_neutral = 0, 0, 0
         existing_tweets_dic = {}
         existing_tweets = list(prime_models.Tweet.objects.filter(trend = trend_obj, id_str__in = id_str_list))
-        for i in existing_tweets:
-            existing_tweets_dic[i.id_str] = i
+        for var_xyz in existing_tweets:
+            existing_tweets_dic[var_xyz.id_str] = var_xyz
 
         for tmp_tweet in current_tweets_list:
             # Tweet obj already Exist
