@@ -28,8 +28,11 @@ class GetTrend(ListAPIView, RetrieveAPIView):
     serializer_class = prime_serializers.BaseTrendSerializer
 
     def retrieve(self, request, *args, **kwargs):
-        kwargs[self.lookup_field] = kwargs['data']
-        instance = self.get_object()
+        instance = prime_models.Trend.objects.filter(id=kwargs['data'])
+        if(not(instance)):
+            return Response({'message':'Trend does not exist', 'status':False})
+        else:
+            instance = instance[0]
         serializer = self.get_serializer(instance)
         data = serializer.data
         total_available_tweets = instance.num_positive + instance.num_neutral + instance.num_negative

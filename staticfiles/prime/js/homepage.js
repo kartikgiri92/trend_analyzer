@@ -1,32 +1,45 @@
-console.log('Hello World');
+var active_trend_url = window.location.origin + "/api/prime/get-active-trend/";
+var fetch_trend_by_id_url = window.location.origin + "/api/prime/get-trend/";
 
-var active_trend_url = "http://127.0.0.1:8000/api/prime/get-active-trend/";
-
-// let response = await fetch(active_trend_url);
-
-// // if(response.ok){ 
-// //   let json = await response.json();
-// //   console.log(json);
-// //   console.log(response.status);
-// // }
-// // else{
-// //   alert("HTTP-Error: " + response.status);
-// // }
-
-const get_active_trends = async () => {
+const get_active_trend = async () => {
     let response = await fetch(active_trend_url, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        },
     });
     if (response.ok){
-        let json = await response.json();
-        console.log(response);
+        let json_obj = await response.json();
+        // if(json_obj.status){
+        //     console.log('Y');
+        // }
+        // else{
+        //     console.log('N');
+        // }
+        
     }
     else{
-        alert("HTTP-Error: ");
+        console.log("Error occured, reload the page.");
     }
 }
 
-get_active_trends();
+const fetch_trend = async () => {
+    let temp_url = fetch_trend_by_id_url + '5/';
+    let response = await fetch(temp_url, {
+        method: "GET",
+    });
+    if (response.ok){
+        let json_obj = await response.json();
+        // console.log(json_obj)
+        if(json_obj.status){
+            console.log('Y');
+        }
+        else{
+            console.log('N');
+        }
+        
+    }
+    else{
+        console.log("Error occured, reload the page.");
+    }
+}
+
+// get_active_trend();
+// fetch_trend();
