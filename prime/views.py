@@ -26,6 +26,7 @@ class GetTrend(ListAPIView, RetrieveAPIView):
     lookup_field = 'id'
     queryset = prime_models.Trend.objects.all().order_by('-last_updated')
     serializer_class = prime_serializers.BaseTrendSerializer
+    num_of_oembed_to_send = 5
 
     def retrieve(self, request, *args, **kwargs):
         instance = prime_models.Trend.objects.filter(id=kwargs['data'])
@@ -46,21 +47,22 @@ class GetTrend(ListAPIView, RetrieveAPIView):
             data['neutral_percentage'] = 0
             data['negative_percentage'] = 0
 
-        if(data['positive_percentage'] >= 1):
-            temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__gt = 0.5).\
-                order_by('-favourite_count', '-retweet_count'))
-            min_index = min(len(temp), 5)
-            data['positive_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
-        if(data['negative_percentage'] >= 1):
-            temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__lt = -0.5).\
-                order_by('-favourite_count', '-retweet_count'))
-            min_index = min(len(temp), 5)
-            data['negative_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
-        if(data['neutral_percentage'] >= 1):
-            temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__range = (-0.5, 0.5)).\
-                order_by('-favourite_count', '-retweet_count'))
-            min_index = min(len(temp), 5)
-            data['neutral_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
+        
+        temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__gt = prime_utils.positivie_threshold).\
+            order_by('-favourite_count', '-retweet_count'))
+        min_index = min(len(temp), self.num_of_oembed_to_send)
+        data['positive_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
+    
+        temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__lt = prime_utils.negative_threshold).\
+            order_by('-favourite_count', '-retweet_count'))
+        min_index = min(len(temp), self.num_of_oembed_to_send)
+        data['negative_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
+    
+        temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__range = (\
+            prime_utils.negative_threshold, prime_utils.positivie_threshold)).\
+            order_by('-favourite_count', '-retweet_count'))
+        min_index = min(len(temp), self.num_of_oembed_to_send)
+        data['neutral_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
 
         return Response({'data':data,'status':True})
 

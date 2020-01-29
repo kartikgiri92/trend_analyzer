@@ -21,13 +21,16 @@ top_trending_quantity = 10  # Top Trending should always be <= Trends Fetch Quan
 trends_fetch_quantity = 30  # Top Trending should always be <= Trends Fetch Quantity
 tweets_fetch_quantity = 80
 
+positivie_threshold = 0.3
+negative_threshold = -0.3
+
 analyser = SentimentIntensityAnalyzer()
 
 def sentiment_classify(compound_value):
-    if(compound_value > 0.5):
+    if(compound_value > positivie_threshold):
         # Positive
         return(1, 0, 0)
-    if(compound_value < -0.5):
+    if(compound_value < negative_threshold):
         # Negative
         return(0, 0, 1)
     else:
@@ -161,7 +164,7 @@ def prime_func(request):  # Return Dict object
     # Delete Trends With No Tweets
     del_trends = list(prime_models.Trend.objects.all().prefetch_related('tweet_set'))
     for tmp_obj in del_trends:
-        if(not(len(tmp_obj.tweet_set.all()))):
+        if(len(tmp_obj.tweet_set.all()) == 0):
             tmp_obj.delete()
 
     #  Mark Last Updated as Trending
