@@ -9,4 +9,6 @@ urlpatterns = [
     path('abcd/admin/', admin.site.urls),
     path('api/prime/', include('prime.urls')),
     path('', TemplateView.as_view(template_name="prime/homepage.html")),
+    path('<int:id>/', TemplateView.as_view(template_name="prime/homepage.html")),
+    path('arch/', TemplateView.as_view(template_name="prime/arch.html")),
 ]

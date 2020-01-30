@@ -11,7 +11,8 @@ class BaseTweetSerializer(serializers.ModelSerializer):
 class BaseTrendSerializer(serializers.ModelSerializer):
     class Meta:
         model = prime_models.Trend
-        fields = ('id', 'url', 'name', 'total_tweet_volume', 'last_updated', 'is_top_trending')
+        fields = ('id', 'url', 'name', 'total_tweet_volume', 'last_updated', 
+        	'num_positive', 'num_negative', 'num_neutral', 'is_top_trending')
 
 # class TrendWithTweetSerializer(serializers.ModelSerializer):
 

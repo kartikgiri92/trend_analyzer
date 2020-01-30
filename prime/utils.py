@@ -17,9 +17,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # Info
 # trends_fetch_quantity always [1, 50]
 # tweets_fetch_quantity always [1, 100]
-top_trending_quantity = 10  # Top Trending should always be <= Trends Fetch Quantity
-trends_fetch_quantity = 25  # Top Trending should always be <= Trends Fetch Quantity
-tweets_fetch_quantity = 80
+top_trending_quantity = 20  # Top Trending should always be <= Trends Fetch Quantity
+trends_fetch_quantity = 30  # Top Trending should always be <= Trends Fetch Quantity
+tweets_fetch_quantity = 70
 
 positivie_threshold = 0.3
 negative_threshold = -0.3

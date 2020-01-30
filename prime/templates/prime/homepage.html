@@ -7,41 +7,95 @@
         
 {% block page_content %}
 
-    <div class="active-trend-section">
-        <div class="row">
+    <!-- ACTIVE TREND SECTION -->
+    <div id="active-trend-section">
+        <div id="active-trend-row" class="row">
             <div class="col col-md-auto mb-3">
-                <div class="border border-danger rounded py-1 px-2 text-danger">
-                    TRENDING :
+                <div class="bg-danger text-white rounded-pill py-1 px-2">
+                    TRENDING
                 </div>
             </div>
-            <div class="col col-md-auto mb-3">
-                <div id="temp" class="btn btn-md btn-outline-primary">
-                    <div>
-                        a
-                    </div>
+            <div id="active-trend-not-available-tag" class="col col-md-auto mb-3">
+                <div class="border border-danger rounded-pill py-1 px-2 text-danger">
+                    DATA NOT AVAILABLE (-_-)zzz
                 </div>
             </div>
-            <div class="col col-md-auto mb-3">
-                <div class="btn btn-md btn-outline-primary">
-                    ab
+            <div id="active-trend-example-tag" class="active-trend col col-md-auto mb-3" style="display: none">
+                <div class="btn btn-md btn-outline-primary rounded-pill">
                 </div>
             </div>
-            <div class="col col-md-auto mb-3">
-                <div class="btn btn-md btn-outline-primary">
-                    abcd
-                </div>
-            </div>
-            <div class="col col-md-auto mb-3">
-                <div class="btn btn-md btn-outline-primary">
-                    a
-                </div>
-            </div>
-
-            
         </div>
     </div>
-    <div class="trend-information">
-        
+
+    <hr class="rounded-pill">
+
+    <!-- TREND INFORMATION SECTION -->
+    <div id="trend-information-section">
+        <div id="trend-information-not-available-tag" class="col col-md-12">
+            <h1 class="text-center">
+                <div class="border border-danger rounded-pill py-1 px-2 text-danger">
+                    SELECT A TREND
+                </div>
+            </h1>
+        </div>
+        <div id="trend-information-row" class="row m-2">
+            <div class="col col-md-6 px-2 info-side">
+                <h2 class="text-center text-danger">
+                    TREND INFO
+                </h2>
+                <ul>
+                    <li>
+                        <div class="row">
+                            <p class="col col-md-auto">Name :</p>
+                            <p class="trend-information col col-md-auto"></p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <p class="col col-md-auto">Total Tweets :</p>
+                            <p class="trend-information col col-md-auto"></p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <p class="col col-md-auto">Top Trending :</p>
+                            <p class="trend-information col col-md-auto"></p>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="row py-3">
+                    <p>Sentiment Analysis done on</p>
+                    <div class="trend-information text-primary text-center" style="font-size: 20px;"></div>
+                     <p>popular or recent tweets.</p>
+                </div>
+
+                <ul>
+                    <li>
+                        <div class="row">
+                            <p class="col col-md-auto">Positive Percentage :</p>
+                            <p class="trend-information col col-md-auto"></p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <p class="col col-md-auto">Neutral Percentage :</p>
+                            <p class="trend-information col col-md-auto"></p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <p class="col col-md-auto">Negative Percentage :</p>
+                            <p class="trend-information col col-md-auto"></p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-auto graph-side">
+                <!-- GRAPH AREA -->
+            </div>
+            
+        </div>
     </div>
 
 {% endblock %}
