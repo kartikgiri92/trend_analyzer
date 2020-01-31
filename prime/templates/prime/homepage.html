@@ -17,7 +17,7 @@
             </div>
             <div id="active-trend-not-available-tag" class="col col-md-auto mb-3">
                 <div class="border border-danger rounded-pill py-1 px-2 text-danger">
-                    Trending not Available (-_-)zzz
+                    Trending Data not Available (-_-)zzz
                 </div>
             </div>
             <div id="active-trend-example-tag" class="active-trend col col-md-auto mb-3" style="display: none">
@@ -43,6 +43,7 @@
     <!-- TREND INFORMATION SECTION -->
     <div id="trend-information-section" style="display: none;">
         <div id="trend-information-row" class="row m-2">
+            <!-- Information Side -->
             <div class="col col-md-6 px-2 info-side">
                 <h2 class="text-center text-danger">
                     TREND INFO
@@ -95,10 +96,46 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-auto graph-side">
-                <!-- GRAPH AREA -->
+            <!-- GRAPH Side -->
+            <div class="col-md-auto graph-side mt-2">
+                <div id="chartContainer" style="width: 100%"></div>
             </div>
-            
+        </div>
+
+        <!-- Oembed Section Example -->
+        <div id="oembed-section-example" style="display: none;">
+
+            <!-- Positive Card -->
+            <div class="card mt-3">
+                <div class="card-header bg-info">
+                    Positive Sentiments
+                </div>
+                <div class="card-body positive-sentiment-card-body row">
+                    <div class="col col-md-auto">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Neutral Card -->
+            <div class="card mt-3">
+                <div class="card-header bg-info">
+                    Negative Sentiments
+                </div>
+                <div class="card-body neutral-sentiment-card-body row">
+                    <div class="col col-md-auto"></div>
+                </div>
+            </div>
+
+            <!-- Negative Card -->
+            <div class="card mt-3">
+                <div class="card-header bg-info">
+                    Negative Sentiments
+                </div>
+                <div class="card-body negative-sentiment-card-body row">
+                    <div class="col col-md-auto"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -106,5 +143,7 @@
     
 
 {% block extra_js %}
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script type="text/javascript" src="{% static 'prime/js/homepage.js' %}"></script>
+
 {% endblock %}

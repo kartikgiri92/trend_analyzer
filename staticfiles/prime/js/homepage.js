@@ -65,6 +65,40 @@ function fill_trend_information(json_obj_data){
     // Trend Negative Percentage
     trend_information_elements[6].style.color = "red";
     trend_information_elements[6].innerHTML = Math.round( json_obj_data.negative_percentage * 100 ) / 100;
+
+    // Pie Chart
+    let chart = new CanvasJS.Chart("chartContainer", {
+        animationEnabled: true,
+        title: {
+            text: "Sentiment Analysis over " + (json_obj_data.num_positive + json_obj_data.num_neutral +  json_obj_data.num_negative) + " tweets"
+        },
+        data: [{
+            type: "pie",
+            startAngle: 240,
+            yValueFormatString: "##0.00\"%\"",
+            indexLabel: "{label} {y}",
+            dataPoints: [
+                {y: json_obj_data.neutral_percentage, label: "Neutral %"},
+                {y: json_obj_data.positive_percentage, label: "Positive %"},
+                {y: json_obj_data.negative_percentage, label: "Negative %"},
+            ]
+        }]
+    });
+    chart.render();
+
+    document.querySelector("#chartContainer").style.height = document.querySelector(".canvasjs-chart-canvas").style.height;
+
+    // Oembed Section
+    if(document.querySelector("#oembed-section")){
+        let oembed_section = document.querySelector("#oembed-section");
+        trend_information_section.removeChild(oembed_section);
+    }
+    let oembed_section_example = document.querySelector("#oembed-section-example");
+    let oembed_section = oembed_section_example.cloneNode(deep=true);
+    oembed_section.id = "oembed-section"
+    oembed_section.style.display = "block";
+    
+    trend_information_section.append(oembed_section);
 }
 
 const fetch_trend = async (temp_pathname) => {
