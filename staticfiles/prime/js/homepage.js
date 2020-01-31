@@ -97,8 +97,21 @@ function fill_trend_information(json_obj_data){
     let oembed_section = oembed_section_example.cloneNode(deep=true);
     oembed_section.id = "oembed-section"
     oembed_section.style.display = "block";
-    
     trend_information_section.append(oembed_section);
+
+    // Append postive tweets
+    let card_body = oembed_section.querySelector(".positive-sentiment-card-body")
+    if(json_obj_data.positive_tweets.length){
+        let first_ele = card_body.removeChild(card_body.firstElementChild);
+        json_obj_data.positive_tweets.forEach(function(oembed_string){
+            let element_body = first_ele.cloneNode();
+            element_body.innerHTML = oembed_string;
+            card_body.append(element_body);
+        });
+    }
+    else{
+        card_body.innerHTML = "No Data";
+    }
 }
 
 const fetch_trend = async (temp_pathname) => {
