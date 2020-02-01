@@ -132,15 +132,10 @@ def prime_func(request):  # Return Dict object
                 # New Tweet obj will be created
                 tweet_txt = data_preprocessing(tmp_tweet.full_text)
                 cmpd_value = analyser.polarity_scores(tweet_txt)['compound']
-                try:
-                    oem_html = api.get_oembed(id = tmp_tweet.id_str, omit_script = True)['html']
-                except tweepy.TweepError:
-                    # prime_models.Log.objects.create(message = 'OEM NOT GENERATED for tweet {}'.format(tmp_tweet.id_str))
-                    continue
                 tweet_obj = prime_models.Tweet(text = tweet_txt, trend = trend_obj,
                         id_str = tmp_tweet.id_str, retweet_count = tmp_tweet.retweet_count,
                         favourite_count = tmp_tweet.favorite_count,
-                        oembed_html = oem_html, compound_value = cmpd_value)
+                        compound_value = cmpd_value)
                 tmp_pst, tmp_neg, tmp_neut = sentiment_classify(cmpd_value)
                 number_of_positive += tmp_pst
                 number_of_negative += tmp_neg

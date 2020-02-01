@@ -6,7 +6,7 @@ from rest_framework import serializers
 class BaseTweetSerializer(serializers.ModelSerializer):
     class Meta:
         model = prime_models.Tweet
-        fields = ('id_str', 'text', 'oembed_html')
+        fields = ('id_str', 'text', 'retweet_count', 'favourite_count', 'compound_value')
 
 class BaseTrendSerializer(serializers.ModelSerializer):
     class Meta:

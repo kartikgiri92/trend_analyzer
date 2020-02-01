@@ -21,7 +21,6 @@ class Tweet(models.Model):
     text = models.TextField()
     retweet_count = models.TextField()
     favourite_count = models.TextField()
-    oembed_html = models.TextField()
     compound_value = models.FloatField(default = 0)
     
     def __str__(self):
