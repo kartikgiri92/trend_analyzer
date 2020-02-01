@@ -4,6 +4,8 @@ import tweepy
 import prime.models as prime_models
 import config.settings as config_settings
 
+from datetime import datetime, timedelta
+from pytz import timezone
 from prime.woeid_list import India
 from random import shuffle
 from django.db import IntegrityError
@@ -15,11 +17,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # reset_queries()
 
 # Info
-# trends_fetch_quantity always [1, 50]
-# tweets_fetch_quantity always [1, 100]
-top_trending_quantity = 20  # Top Trending should always be <= Trends Fetch Quantity
-trends_fetch_quantity = 30  # Top Trending should always be <= Trends Fetch Quantity
-tweets_fetch_quantity = 100
+# tweets_fetch_quantity always in [1, 100]
+top_trending_quantity = 20
+tweets_fetch_quantity = 75
 
 positivie_threshold = 0.3
 negative_threshold = -0.3
@@ -72,7 +72,6 @@ def prime_func(request):  # Return Dict object
     # Fetch current Trends
     try:
         # List containing trends as dict objects
-        # The api always fetch 50 trends
         current_trends_list = api.trends_place(id = India)[0]['trends']
         length_of_current_trends = len(current_trends_list)
 
@@ -80,17 +79,9 @@ def prime_func(request):  # Return Dict object
         prime_models.Log.objects.create(message = 'Error While Fetching Trends')
         return({'message' : 'Error While Fetching Trends', 'status' : False})
 
-    if((length_of_current_trends < top_trending_quantity) or (length_of_current_trends < trends_fetch_quantity)
-            or (top_trending_quantity > trends_fetch_quantity)):
-        prime_models.Log.objects.create(message = 'Length of Current Trends less than Needed Quantity')
-        return({'message' : 'Length of Current Trends less than Needed Quantity', 'status' : False})
-    else:
-        shuffle(current_trends_list)
-        current_trends_list = current_trends_list[0: trends_fetch_quantity]
-        length_of_current_trends = len(current_trends_list)
-
     for i in range(length_of_current_trends):
-        if(current_trends_list[i]['name'][0] == '#'):   current_trends_list[i]['name'] = current_trends_list[i]['name'][1:]
+        if(current_trends_list[i]['name'][0] == '#'):
+            current_trends_list[i]['name'] = current_trends_list[i]['name'][1:]
         try:
             trend_obj, created = prime_models.Trend.objects.get_or_create(name = current_trends_list[i]['name'],
                     url = current_trends_list[i]['url'], query = current_trends_list[i]['query'])
@@ -100,13 +91,9 @@ def prime_func(request):  # Return Dict object
             continue
 
         try :
-            current_tweets_list = api.search(q = trend_obj.query,
-                result_type = 'popular', count = tweets_fetch_quantity, 
-                include_entities = False, lang = 'en', tweet_mode = 'extended')
-            if(len(current_tweets_list) < (tweets_fetch_quantity//2)):
-                current_tweets_list = api.search(q = trend_obj.query, 
-                    result_type = 'mixed', count = tweets_fetch_quantity, 
-                    include_entities = False, lang = 'en', tweet_mode = 'extended')
+            current_tweets_list = list(api.search(q = trend_obj.query,
+                count = tweets_fetch_quantity, lang = 'en', 
+                tweet_mode = 'extended'))
             if(len(current_tweets_list) == 0):
                 prime_models.Log.objects.create(message = 'Zero Tweets Fetched for trend {}'.format(trend_obj.name))
                 continue
@@ -118,7 +105,7 @@ def prime_func(request):  # Return Dict object
         id_str_list = [tmp_tweet.id_str for tmp_tweet in current_tweets_list]
         number_of_positive, number_of_negative, number_of_neutral = 0, 0, 0
         existing_tweets_dic = {}
-        existing_tweets = list(prime_models.Tweet.objects.filter(trend = trend_obj, id_str__in = id_str_list))
+        existing_tweets = list(prime_models.Tweet.objects.filter(id_str__in = id_str_list))
         for var_xyz in existing_tweets:
             existing_tweets_dic[var_xyz.id_str] = var_xyz
 
@@ -151,32 +138,26 @@ def prime_func(request):  # Return Dict object
 
         if(current_trends_list[i]['tweet_volume']):
             trend_obj.total_tweet_volume = current_trends_list[i]['tweet_volume']
-             
-        try:
-            if(trend_obj.name[0] == '#'):
-                trend_obj.name = trend_obj.name[1:]
-            trend_obj.save()
-        except IntegrityError:
-            prime_models.Log.objects.create(message = 'Unique Constraint Failed for Unique Trend Name for trend {}'.\
-                format(current_trends_list[i]['name']))
-            trend_obj.delete()
+        trend_obj.save();
 
     # Delete Trends With No Tweets
     del_trends = list(prime_models.Trend.objects.all().prefetch_related('tweet_set'))
     for tmp_obj in del_trends:
-        if(len(tmp_obj.tweet_set.all()) == 0):
+        if((len(tmp_obj.tweet_set.all()) == 0) or ((datetime.now(timezone('Asia/Kolkata')) - tmp_obj.last_updated).days > 1)):
             tmp_obj.delete()
 
-    #  Mark Last Updated as Trending
-    all_trends = list(prime_models.Trend.objects.all().order_by('-last_updated'))
-    var_index = min(len(all_trends), top_trending_quantity)
-    for i in range(0, var_index):
-        all_trends[i].is_top_trending = True
-        all_trends[i].save()
-    # Mark Rest as Not Trending
-    for i in range(var_index, len(all_trends)):
+    all_trends = list(prime_models.Trend.objects.all().order_by('last_updated', 'num_positive', 'num_negative', 'num_neutral'))
+    length_all_trends = len(all_trends)
+    var_index = min(length_all_trends, top_trending_quantity)
+    # Marking as Not Trending
+    for i in range(0, length_all_trends - var_index):
         if(all_trends[i].is_top_trending):
             all_trends[i].is_top_trending = False
+            all_trends[i].save()
+    # Marking as Trending
+    for i in range(length_all_trends - var_index, length_all_trends):
+        if(not(all_trends[i].is_top_trending)):
+            all_trends[i].is_top_trending = True
             all_trends[i].save()
 
     if(config_settings.DEBUG):

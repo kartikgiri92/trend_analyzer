@@ -54,7 +54,10 @@ function fill_table(json_obj_data){
 
         // Trend Total Tweets
         temp_element = document.createElement("td");
-        temp_element.innerHTML = trend_element.total_tweet_volume;
+        if(trend_element.total_tweet_volume == "0")
+            temp_element.innerHTML = "Not Available";
+        else
+            temp_element.innerHTML = trend_element.total_tweet_volume;
         created_ele.append(temp_element);
 
         // Trend Is Top Trending
