@@ -14,6 +14,14 @@ var trend_information_not_available_tag = document.querySelector("#trend-informa
 
 // Trend Info Section Functions
 
+function display_loading_div(){
+    document.querySelector("#loading-div").style.display = "block";
+}
+
+function hide_loading_div(){
+    document.querySelector("#loading-div").style.display = "none";
+}
+
 function display_trend_information_data_unavailability_tag(){
     trend_information_not_available_tag.style.display = "block";
     trend_information_section.style.display = "none";
@@ -179,6 +187,8 @@ function fill_trend_information(json_obj_data){
 }
 
 const fetch_trend = async (temp_pathname) => {
+    display_loading_div();
+    trend_information_section.style.display = "none";
     let temp_url = fetch_trend_by_id_url + temp_pathname + '/';
     let response = await fetch(temp_url, {
         method: "GET",
@@ -186,6 +196,7 @@ const fetch_trend = async (temp_pathname) => {
     if(response.ok){
         let json_obj = await response.json();
         if(json_obj.status){
+            hide_loading_div();
             hide_trend_information_data_unavailability_tag();
             fill_trend_information(json_obj.data);
         }
@@ -226,7 +237,7 @@ function create_and_fill_active_trends(json_obj){
         temp_obj.id = item.id;
         temp_obj.style.display = "block";
         temp_obj.children[0].innerHTML = '#' + item.name
-        active_trend_row.append(temp_obj);
+        active_trend_row.insertBefore(temp_obj, active_trend_row.lastElementChild);
         temp_obj.addEventListener('click', event => {
             unactivate_trending_button();
             temp_obj.children[0].classList.add('active');
@@ -257,6 +268,7 @@ const get_active_trend = async () => {
 
 // On Page Load
 window.addEventListener('load', (event) => {
+    document.querySelector('#fill-arch-link-tag').href = window_location_origin + "/arch";
     get_active_trend();
 
     if(window_location_pathname)

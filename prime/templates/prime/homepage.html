@@ -24,6 +24,11 @@
                 <div class="btn btn-md btn-outline-primary rounded-pill">
                 </div>
             </div>
+            <div id="see-more-trends" class="col col-md-auto mb-3">
+                <a id="fill-arch-link-tag" href="#" class="bg-info btn btn-md rounded-pill">
+                    See More Trends
+                </a>
+            </div>
         </div>
     </div>
 
@@ -39,6 +44,18 @@
         </h1>
     </div>
 
+    <div id="loading-div" style="display: none;">
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center">
+                <strong>Fetching Content</strong>
+            </div>
+            <div class="d-flex justify-content-center col-md-auto">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- TREND INFORMATION SECTION -->
     <div id="trend-information-section" style="display: none;">
@@ -135,6 +152,7 @@
     
 
 {% block extra_js %}
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script src="https://code.highcharts.com/highcharts.src.js"></script>
     <script type="text/javascript" src="{% static 'prime/js/homepage.js' %}"></script>
 
