@@ -51,18 +51,18 @@ class GetTrend(ListAPIView, RetrieveAPIView):
         temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__gt = prime_utils.positivie_threshold).\
             order_by('-favourite_count', '-retweet_count'))
         min_index = min(len(temp), self.num_of_oembed_to_send)
-        data['positive_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
+        data['positive_tweets'] = [temp[i].id_str for i in range(0, min_index)]
     
         temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__lt = prime_utils.negative_threshold).\
             order_by('-favourite_count', '-retweet_count'))
         min_index = min(len(temp), self.num_of_oembed_to_send)
-        data['negative_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
+        data['negative_tweets'] = [temp[i].id_str for i in range(0, min_index)]
     
         temp = list(prime_models.Tweet.objects.filter(trend = instance, compound_value__range = (\
             prime_utils.negative_threshold, prime_utils.positivie_threshold)).\
             order_by('-favourite_count', '-retweet_count'))
         min_index = min(len(temp), self.num_of_oembed_to_send)
-        data['neutral_tweets'] = [temp[i].oembed_html for i in range(0, min_index)]
+        data['neutral_tweets'] = [temp[i].id_str for i in range(0, min_index)]
 
         return Response({'data':data,'status':True})
 

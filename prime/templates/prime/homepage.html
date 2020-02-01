@@ -44,11 +44,11 @@
     <div id="trend-information-section" style="display: none;">
         <div id="trend-information-row" class="row m-2">
             <!-- Information Side -->
-            <div class="col col-md-6 px-2 info-side">
+            <div class="col col-md-5 px-2 info-side">
                 <h2 class="text-center text-danger">
                     TREND INFO
                 </h2>
-                <ul>
+                <ul class="ml-3">
                     <li>
                         <div class="row">
                             <p class="col col-md-auto">Name :</p>
@@ -69,13 +69,13 @@
                     </li>
                 </ul>
 
-                <div class="row py-3">
+                <div class="row py-3 ml-3">
                     <p>Sentiment Analysis done on</p>
                     <div class="trend-information text-center" style="font-size: 20px;"></div>
                      <p>popular or recent tweets.</p>
                 </div>
 
-                <ul>
+                <ul class="ml-3">
                     <li>
                         <div class="row">
                             <p class="col col-md-auto">Positive Percentage :</p>
@@ -97,22 +97,19 @@
                 </ul>
             </div>
             <!-- GRAPH Side -->
-            <div class="col-md-auto graph-side mt-2">
-                <div id="chartContainer" style="width: 100%"></div>
-            </div>
+            <div id="chartContainer" class="col-md-auto graph-side mt-2"></div>
+
         </div>
 
-        <!-- Oembed Section Example -->
-        <div id="oembed-section-example" style="display: none;">
+        <!-- Oembed Section -->
+        <div id="oembed-section">
 
             <!-- Positive Card -->
             <div class="card mt-3">
                 <div class="card-header bg-info">
                     Positive Sentiments
                 </div>
-                <div class="card-body positive-sentiment-card-body row">
-                    <div class="col col-md-auto mb-2" style="width: 30%"></div>
-                </div>
+                <div id="positive-sentiment-card-body" class="card-body row"></div>
             </div>
 
             <!-- Neutral Card -->
@@ -120,9 +117,7 @@
                 <div class="card-header bg-info">
                     Neutral Sentiments
                 </div>
-                <div class="card-body neutral-sentiment-card-body row">
-                    <div class="col col-md-auto mb-2" style="width: 30%"></div>
-                </div>
+                <div id="neutral-sentiment-card-body" class="card-body row"></div>
             </div>
 
             <!-- Negative Card -->
@@ -130,9 +125,7 @@
                 <div class="card-header bg-info">
                     Negative Sentiments
                 </div>
-                <div class="card-body negative-sentiment-card-body row">
-                    <div class="col col-md-auto mb-2" style="width: 30%"></div>
-                </div>
+                <div id="negative-sentiment-card-body" class="card-body row"></div>
             </div>
 
         </div>
@@ -142,7 +135,7 @@
     
 
 {% block extra_js %}
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
     <script type="text/javascript" src="{% static 'prime/js/homepage.js' %}"></script>
 
 {% endblock %}

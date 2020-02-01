@@ -67,50 +67,114 @@ function fill_trend_information(json_obj_data){
     trend_information_elements[6].innerHTML = Math.round( json_obj_data.negative_percentage * 100 ) / 100;
 
     // Pie Chart
-    let chart = new CanvasJS.Chart("chartContainer", {
-        animationEnabled: true,
+    var generated_chart = Highcharts.chart('chartContainer', {
+        chart: {
+            type: 'pie',
+        },
         title: {
             text: "Sentiment Analysis over " + (json_obj_data.num_positive + json_obj_data.num_neutral +  json_obj_data.num_negative) + " tweets"
         },
-        data: [{
-            type: "pie",
-            startAngle: 240,
-            yValueFormatString: "##0.00\"%\"",
-            indexLabel: "{label} {y}",
-            dataPoints: [
-                {y: json_obj_data.neutral_percentage, label: "Neutral %"},
-                {y: json_obj_data.positive_percentage, label: "Positive %"},
-                {y: json_obj_data.negative_percentage, label: "Negative %"},
-            ]
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        accessibility: {
+            point: {
+                valueSuffix: '%'
+            }
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+                name: 'Neutral',
+                color:'blue',
+                y: json_obj_data.neutral_percentage,
+            }, {
+                name: 'Positive',
+                color:'rgb(17, 138, 44)',
+                y: json_obj_data.positive_percentage
+            }, {
+                name: 'Negative',
+                color:'red',
+                y: json_obj_data.negative_percentage
+            }]
         }]
     });
-    chart.render();
 
-    document.querySelector("#chartContainer").style.height = document.querySelector(".canvasjs-chart-canvas").style.height;
+    // Remove previous embed tweets
+    let positive_sentiment_card_body = document.querySelector("#positive-sentiment-card-body")
+    let negative_sentiment_card_body = document.querySelector("#negative-sentiment-card-body")
+    let neutral_sentiment_card_body = document.querySelector("#neutral-sentiment-card-body")
+    positive_sentiment_card_body.innerHTML = "";
+    negative_sentiment_card_body.innerHTML = "";
+    neutral_sentiment_card_body.innerHTML = "";
 
-    // Oembed Section
-    if(document.querySelector("#oembed-section")){
-        let oembed_section = document.querySelector("#oembed-section");
-        trend_information_section.removeChild(oembed_section);
-    }
-    let oembed_section_example = document.querySelector("#oembed-section-example");
-    let oembed_section = oembed_section_example.cloneNode(deep=true);
-    oembed_section.id = "oembed-section"
-    oembed_section.style.display = "block";
-    trend_information_section.append(oembed_section);
-
-    // Append postive tweets
-    let card_body = oembed_section.querySelector(".positive-sentiment-card-body")
+    // embed new tweets
     if(json_obj_data.positive_tweets.length){
-        let first_ele = card_body.removeChild(card_body.firstElementChild);
-        json_obj_data.positive_tweets.forEach(function(oembed_string){
-            let element_body = first_ele.cloneNode();
-            element_body.innerHTML = oembed_string;
-            card_body.append(element_body);
+        json_obj_data.positive_tweets.forEach(function(tweet_id){
+            let created_ele = document.createElement("div");
+            created_ele.classList.add("col");
+            created_ele.classList.add("col-md-auto");
+            created_ele.classList.add("mb-2");
+            positive_sentiment_card_body.append(created_ele);
+            twttr.widgets.createTweet(
+                tweet_id,
+                created_ele,
+                {})
+                .then(function (el){
+            });
         });
     }
     else{
-        card_body.innerHTML = "No Data";
+        positive_sentiment_card_body.innerHTML = "No Data";
+    }
+
+    if(json_obj_data.neutral_tweets.length){
+        json_obj_data.neutral_tweets.forEach(function(tweet_id){
+            let created_ele = document.createElement("div");
+            created_ele.classList.add("col");
+            created_ele.classList.add("col-md-auto");
+            created_ele.classList.add("mb-2");
+            neutral_sentiment_card_body.append(created_ele);
+            twttr.widgets.createTweet(
+                tweet_id,
+                created_ele,
+                {})
+                .then(function (el){
+            });
+        });
+    }
+    else{
+        neutral_sentiment_card_body.innerHTML = "No Data";
+    }
+
+    if(json_obj_data.negative_tweets.length){
+        json_obj_data.negative_tweets.forEach(function(tweet_id){
+            let created_ele = document.createElement("div");
+            created_ele.classList.add("col");
+            created_ele.classList.add("col-md-auto");
+            created_ele.classList.add("mb-2");
+            negative_sentiment_card_body.append(created_ele);
+            twttr.widgets.createTweet(
+                tweet_id,
+                created_ele,
+                {})
+                .then(function (el){
+            });
+        });
+    }
+    else{
+        negative_sentiment_card_body.innerHTML = "No Data";
     }
 }
 
