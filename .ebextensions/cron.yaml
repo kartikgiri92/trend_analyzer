@@ -2,4 +2,4 @@ version: 1
 cron:
   - name: "filldb"
     url: "/api/prime/foung/"
-    schedule: "*/50 * * * *"
+    schedule: "0 * * * *"
