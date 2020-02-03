@@ -7,7 +7,7 @@ SECRET_KEY = 'gpt6&c=x^$(g&um*--l%vx-eeq%8+x^vgf_^$=t!1g!h8i++*#'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://lol-first-env.famrgtgsbc.ap-south-1.elasticbeanstalk.com/']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
