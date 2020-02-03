@@ -1,5 +1,6 @@
 media
 static
+mysite_config.py
 # Executable and temporary files
 *.pyc
 *.idea/

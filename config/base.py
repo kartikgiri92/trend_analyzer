@@ -1,13 +1,11 @@
 import os
+import mysite_config
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-SECRET_KEY = 'gpt6&c=x^$(g&um*--l%vx-eeq%8+x^vgf_^$=t!1g!h8i++*#'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['lol-first-env.famrgtgsbc.ap-south-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,13 +53,6 @@ STATICFILES_FINDERS = (
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -87,12 +78,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-api_key = 'nTJ9Cy6xyKJrdnQnM65qEBJdZ'
-
-api_secret_key = 'H9ZlGWWl4FIlUN2f67pn0Yo0yYIXZCkSbI6HP12zxT1X0s9EIW'
+twitter_key = mysite_config.twitter_api_key
+twitter_secret_key = mysite_config.twitter_api_secret_key
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "staticfiles")]
-
-STATIC_URL = '/static/'
-
-STATIC_ROOT = "static"

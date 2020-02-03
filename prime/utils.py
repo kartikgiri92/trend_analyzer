@@ -2,7 +2,7 @@ import re
 import tweepy
 
 import prime.models as prime_models
-import config.settings as config_settings
+import config.base as config_base
 
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -58,12 +58,10 @@ def data_preprocessing(input_txt):
     return(input_txt)
 
 def prime_func(request):  # Return Dict object
-    if(config_settings.DEBUG):
-        reset_queries() # To know number of Queries
     
     # Authenticating API keys
     try:
-        auth = tweepy.AppAuthHandler(config_settings.api_key, config_settings.api_secret_key)
+        auth = tweepy.AppAuthHandler(config_base.twitter_key, config_base.twitter_secret_key)
         api = tweepy.API(auth)
     except tweepy.TweepError:
         prime_models.Log.objects.create(message = 'During keys Auth')
@@ -160,7 +158,4 @@ def prime_func(request):  # Return Dict object
             all_trends[i].is_top_trending = True
             all_trends[i].save()
 
-    if(config_settings.DEBUG):
-        print(len(connection.queries)) # To know number of Queries
-        reset_queries()
     return({'message' : 'Successfull data fetching, cleaning and updating', 'status' : True})
