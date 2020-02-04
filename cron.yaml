@@ -1,5 +1,0 @@
-version: 1
-cron:
-  - name: "filldb"
-    url: "/api/prime/foung/"
-    schedule: "0 * * * *"
