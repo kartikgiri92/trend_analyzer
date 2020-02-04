@@ -6,7 +6,7 @@ DEBUG = True
 
 SECRET_KEY = mysite_config.prod_keys['secret_key']
 
-ALLOWED_HOSTS = ['env-1.b6pimk2whj.ap-south-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['trend-anaylzer-env.ksmsub4jne.ap-south-1.elasticbeanstalk.com']
 
 if('RDS_HOSTNAME' in os.environ):
     DATABASES = {
