@@ -26,6 +26,9 @@ negative_threshold = -0.3
 
 analyser = SentimentIntensityAnalyzer()
 
+def deEmojify(inputString):
+    return(inputString.encode('ascii', 'ignore').decode('ascii'))
+
 def sentiment_classify(compound_value):
     # return(positive, negative, neutral)
     if(compound_value > positivie_threshold):
@@ -54,6 +57,8 @@ def data_preprocessing(input_txt):
     input_txt = remove_pattern(input_txt, "https?://[A-Za-z0-9./]*")
     # remove special characters, numbers, punctuations (except for #)
     input_txt = str.replace(input_txt, "[^a-zA-Z#]", " ")
+    # Removing all Emojis
+    input_txt = deEmojify(input_txt)
     
     return(input_txt)
 
@@ -78,15 +83,11 @@ def prime_func(request):  # Return Dict object
         return({'message' : 'Error While Fetching Trends', 'status' : False})
 
     for i in range(length_of_current_trends):
+        current_trends_list[i]['name'] = deEmojify(current_trends_list[i]['name'])
         if(current_trends_list[i]['name'][0] == '#'):
             current_trends_list[i]['name'] = current_trends_list[i]['name'][1:]
-        try:
-            trend_obj, created = prime_models.Trend.objects.get_or_create(name = current_trends_list[i]['name'],
-                    url = current_trends_list[i]['url'], query = current_trends_list[i]['query'])
-        except IntegrityError:
-            prime_models.Log.objects.create(message = 'Unique Constraint Failed for Unique Trend Name for trend {}'.\
-                format(current_trends_list[i]['name']))
-            continue
+        trend_obj, created = prime_models.Trend.objects.get_or_create(name = current_trends_list[i]['name'],
+                url = current_trends_list[i]['url'], query = current_trends_list[i]['query'])
 
         try :
             current_tweets_list = list(api.search(q = trend_obj.query,

@@ -2,9 +2,9 @@ from django.db import models
 
 # Create your models here.
 class Trend(models.Model):
-    url = models.CharField(max_length = 50)
-    name = models.CharField(unique = True, max_length = 125)
-    query = models.CharField(max_length = 50)
+    url = models.CharField(max_length = 300)
+    name = models.CharField(max_length = 300)
+    query = models.CharField(max_length = 300)
     num_positive = models.IntegerField(default = 0)
     num_neutral = models.IntegerField(default = 0)
     num_negative = models.IntegerField(default = 0)
