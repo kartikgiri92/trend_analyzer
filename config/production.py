@@ -2,7 +2,7 @@ from .base import *
 
 import mysite_config
 
-DEBUG = False
+DEBUG = True
 
 SECRET_KEY = mysite_config.prod_keys['secret_key']
 
