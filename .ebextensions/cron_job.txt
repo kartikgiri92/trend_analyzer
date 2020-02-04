@@ -1,2 +1,0 @@
-# Add Cron jobs here
-#*/10 * * * * root curl -i "http://trend-anaylzer-env.ksmsub4jne.ap-south-1.elasticbeanstalk.com/api/prime/foung/" > prime/twitter_logs.txt
