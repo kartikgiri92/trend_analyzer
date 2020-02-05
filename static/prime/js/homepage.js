@@ -14,6 +14,23 @@ var trend_information_not_available_tag = document.querySelector("#trend-informa
 
 // Trend Info Section Functions
 
+function put_twitter_sentiment(append_data_in_this_element, tweet_list){
+    append_data_in_this_element.innerHTML = '';
+    tweet_list.forEach(function(tweet_id){
+        let created_ele = document.createElement("div");
+        created_ele.classList.add("col");
+        created_ele.classList.add("col-md-auto");
+        created_ele.classList.add("mb-2");
+        append_data_in_this_element.append(created_ele);
+        twttr.widgets.createTweet(
+            tweet_id,
+            created_ele,
+            {})
+            .then(function (el){
+        });
+    });
+}
+
 function display_loading_div(){
     document.querySelector("#loading-div").style.display = "block";
 }
@@ -128,61 +145,58 @@ function fill_trend_information(json_obj_data){
     neutral_sentiment_card_body.innerHTML = "";
 
     // embed new tweets
-    if(json_obj_data.positive_tweets.length){
-        json_obj_data.positive_tweets.forEach(function(tweet_id){
-            let created_ele = document.createElement("div");
-            created_ele.classList.add("col");
-            created_ele.classList.add("col-md-auto");
-            created_ele.classList.add("mb-2");
-            positive_sentiment_card_body.append(created_ele);
-            twttr.widgets.createTweet(
-                tweet_id,
-                created_ele,
-                {})
-                .then(function (el){
-            });
-        });
-    }
-    else{
+    if(json_obj_data.positive_tweets.length == 0){
         positive_sentiment_card_body.innerHTML = "No Data";
     }
-
-    if(json_obj_data.neutral_tweets.length){
-        json_obj_data.neutral_tweets.forEach(function(tweet_id){
-            let created_ele = document.createElement("div");
-            created_ele.classList.add("col");
-            created_ele.classList.add("col-md-auto");
-            created_ele.classList.add("mb-2");
-            neutral_sentiment_card_body.append(created_ele);
-            twttr.widgets.createTweet(
-                tweet_id,
-                created_ele,
-                {})
-                .then(function (el){
-            });
+    else{
+        let created_btn = document.createElement("div");
+        created_btn.classList.add("btn");
+        created_btn.classList.add("btn-sm");
+        created_btn.classList.add("btn-primary");
+        created_btn.classList.add("col");
+        created_btn.classList.add("col-md-auto");
+        created_btn.classList.add("mb-2");
+        created_btn.innerHTML = "Show Positive Sentiments"
+        positive_sentiment_card_body.append(created_btn);
+        created_btn.addEventListener('click', event => {
+            put_twitter_sentiment(positive_sentiment_card_body, json_obj_data.positive_tweets);
         });
     }
-    else{
+
+    if(json_obj_data.neutral_tweets.length == 0){
         neutral_sentiment_card_body.innerHTML = "No Data";
     }
-
-    if(json_obj_data.negative_tweets.length){
-        json_obj_data.negative_tweets.forEach(function(tweet_id){
-            let created_ele = document.createElement("div");
-            created_ele.classList.add("col");
-            created_ele.classList.add("col-md-auto");
-            created_ele.classList.add("mb-2");
-            negative_sentiment_card_body.append(created_ele);
-            twttr.widgets.createTweet(
-                tweet_id,
-                created_ele,
-                {})
-                .then(function (el){
-            });
+    else{
+        let created_btn = document.createElement("div");
+        created_btn.classList.add("btn");
+        created_btn.classList.add("btn-sm");
+        created_btn.classList.add("btn-primary");
+        created_btn.classList.add("col");
+        created_btn.classList.add("col-md-auto");
+        created_btn.classList.add("mb-2");
+        created_btn.innerHTML = "Show Neutral Sentiments"
+        neutral_sentiment_card_body.append(created_btn);
+        created_btn.addEventListener('click', event => {
+            put_twitter_sentiment(neutral_sentiment_card_body, json_obj_data.neutral_tweets);
         });
     }
+
+    if(json_obj_data.negative_tweets.length == 0){
+        negative_sentiment_card_body.innerHTML = "No Data";   
+    }
     else{
-        negative_sentiment_card_body.innerHTML = "No Data";
+        let created_btn = document.createElement("div");
+        created_btn.classList.add("btn");
+        created_btn.classList.add("btn-sm");
+        created_btn.classList.add("btn-primary");
+        created_btn.classList.add("col");
+        created_btn.classList.add("col-md-auto");
+        created_btn.classList.add("mb-2");
+        created_btn.innerHTML = "Show Negative Sentiments"
+        negative_sentiment_card_body.append(created_btn);
+        created_btn.addEventListener('click', event => {
+            put_twitter_sentiment(negative_sentiment_card_body, json_obj_data.negative_tweets);
+        });
     }
 }
 
