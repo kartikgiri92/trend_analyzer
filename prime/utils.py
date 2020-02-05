@@ -27,6 +27,7 @@ negative_threshold = -0.3
 analyser = SentimentIntensityAnalyzer()
 
 def deEmojify(inputString):
+    # Remove all Emoticons from string
     return(inputString.encode('ascii', 'ignore').decode('ascii'))
 
 def sentiment_classify(compound_value):

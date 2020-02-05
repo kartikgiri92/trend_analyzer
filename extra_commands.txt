@@ -13,6 +13,9 @@ container_commands:
         command: "cat .ebextensions/cron_job.txt > /etc/cron.d/cron_job && chmod 644 /etc/cron.d/cron_job"
         leader_only: true
 
+    remove_old_cron:
+        command: "rm -f /etc/cron.d/mycron.bak"
+
 option_settings:
     aws:elasticbeanstalk:application:environment:
         DJANGO_SETTINGS_MODULE: config.production
