@@ -1,7 +1,7 @@
 import prime.models as prime_models
 import prime.utils as prime_utils
 import prime.serializers as prime_serializers
-
+import mysite_config
 import time
 from rest_framework.parsers import FileUploadParser
 from django.db import connection, reset_queries
@@ -20,6 +20,8 @@ from rest_framework.generics import (ListAPIView,
 class foung(GenericAPIView):
     # This API is called only through CRON
     def get(self, request, *args, **kwargs):
+        if(request.headers['Foung-Required-Key'] != mysite_config.foung_required_key):
+            return Response({'message':'Authentication Failed', 'status':False})
         return Response(prime_utils.prime_func(request))
 
 class GetTrend(ListAPIView, RetrieveAPIView):
