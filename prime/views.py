@@ -20,8 +20,12 @@ from rest_framework.generics import (ListAPIView,
 class foung(GenericAPIView):
     # This API is called only through CRON
     def get(self, request, *args, **kwargs):
-        if(request.headers['Foung-Required-Key'] != mysite_config.foung_required_key):
+        try:
+            if(request.headers['Foung-Required-Key'] != mysite_config.foung_required_key):
+                return Response({'message':'Authentication Failed', 'status':False})
+        except KeyError:
             return Response({'message':'Authentication Failed', 'status':False})
+
         return Response(prime_utils.prime_func(request))
 
 class GetTrend(ListAPIView, RetrieveAPIView):
@@ -69,6 +73,12 @@ class GetTrend(ListAPIView, RetrieveAPIView):
         return Response({'data':data,'status':True})
 
     def list(self, request, *args, **kwargs):
+        try:
+            if(request.headers['Get-Request-Key'] != mysite_config.get_request_key):
+                return Response({'message':'Authentication Failed', 'status':False})
+        except KeyError:
+            return Response({'message':'Authentication Failed', 'status':False})
+
         if(len(kwargs)):
             return(self.retrieve(request, data = kwargs[self.lookup_field]))
         queryset = self.filter_queryset(self.get_queryset())
@@ -87,6 +97,12 @@ class GetActiveTrend(ListAPIView):
     serializer_class = prime_serializers.BaseTrendSerializer
 
     def list(self, request, *args, **kwargs):
+        try:
+            if(request.headers['Get-Request-Key'] != mysite_config.get_request_key):
+                return Response({'message':'Authentication Failed', 'status':False})
+        except KeyError:
+            return Response({'message':'Authentication Failed', 'status':False})
+
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:

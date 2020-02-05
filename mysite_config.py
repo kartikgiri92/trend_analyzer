@@ -15,3 +15,6 @@ dev_keys = {
 prod_keys = {
     "secret_key" : "gpt6&c=x^$(g&um*--l%vx-eeq%8+x^vgf_^$=t!1g!h8i++*#",
 }
+
+# This is Publically visible on js. 
+get_request_key = 'hjsfdjlkgdkln5089498324-oijhdfgjkd8953r'

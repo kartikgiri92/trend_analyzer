@@ -206,6 +206,9 @@ const fetch_trend = async (temp_pathname) => {
     let temp_url = fetch_trend_by_id_url + temp_pathname + '/';
     let response = await fetch(temp_url, {
         method: "GET",
+        headers: {
+            'Get-Request-Key': 'hjsfdjlkgdkln5089498324-oijhdfgjkd8953r'
+        },
     });
     if(response.ok){
         let json_obj = await response.json();
@@ -263,6 +266,9 @@ function create_and_fill_active_trends(json_obj){
 const get_active_trend = async () => {
     let response = await fetch(fetch_active_trend_url, {
         method: "GET",
+        headers: {
+            'Get-Request-Key': 'hjsfdjlkgdkln5089498324-oijhdfgjkd8953r'
+        },
     });
     if(response.ok){
         let json_obj = await response.json();

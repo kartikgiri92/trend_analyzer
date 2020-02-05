@@ -95,6 +95,9 @@ function fill_table(json_obj_data){
 const fetch_all_trends = async () => {
     let response = await fetch(fetch_all_trends_url, {
         method: "GET",
+        headers: {
+            'Get-Request-Key': 'hjsfdjlkgdkln5089498324-oijhdfgjkd8953r'
+        },
     });
     if(response.ok){
         let json_obj = await response.json();
