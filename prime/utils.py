@@ -86,6 +86,14 @@ def prime_func(request):  # Return Dict object
         current_trends_list[i]['name'] = deEmojify(current_trends_list[i]['name'])
         if(current_trends_list[i]['name'][0] == '#'):
             current_trends_list[i]['name'] = current_trends_list[i]['name'][1:]
+        if(len(current_trends_list[i]['name']) <= 3):
+            # if length of trend name is lesser or equal to 3 than 
+            # that trend should not be saved
+            continue
+        if(len(set(current_trends_list[i]['name'])) == 1):
+            # if only one type of character exist in list
+            # This was done to remove trends with trend name like '___'
+            continue
         trend_obj, created = prime_models.Trend.objects.get_or_create(name = current_trends_list[i]['name'],
                 url = current_trends_list[i]['url'], query = current_trends_list[i]['query'])
 

@@ -20,6 +20,7 @@
 
     <!-- Global Css -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome/css/font-awesome.min.css' %}">
 
     {% block extra_css %}
 
@@ -38,8 +39,13 @@
             {% block page_content %}
             {% endblock page_content %}
         </div>
-    </div>    
-
+        <div class="footer_content">
+            <!-- Footer COntent Block -->
+            {% block footerSpace %}
+                {% include "base_footer.html" %}
+            {% endblock %}
+        </div>
+    </div>
 
     <!-- Global Scripts -->
     <script>
