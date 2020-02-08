@@ -151,7 +151,7 @@ def prime_func(request):  # Return Dict object
     # Delete Trends With No Tweets
     del_trends = list(prime_models.Trend.objects.all().prefetch_related('tweet_set'))
     for tmp_obj in del_trends:
-        if((len(tmp_obj.tweet_set.all()) == 0) or ((datetime.now(timezone('Asia/Kolkata')) - tmp_obj.last_updated).days > 1)):
+        if((len(tmp_obj.tweet_set.all()) == 0) or ((datetime.now(timezone('Asia/Kolkata')) - tmp_obj.last_updated).days > 0)):
             tmp_obj.delete()
 
     all_trends = list(prime_models.Trend.objects.all().order_by('last_updated', 'num_positive', 'num_negative', 'num_neutral'))
