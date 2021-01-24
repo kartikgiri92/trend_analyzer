@@ -62,7 +62,8 @@ def data_preprocessing(input_txt):
 
 
 def prime_func(request):  # Return Dict object
-
+    print("----- Entered Prime Function -----")
+    print("----- Authenticating cred from twitter -----")
     # Authenticating API keys
     try:
         auth = tweepy.AppAuthHandler(config_base.twitter_key, config_base.twitter_secret_key)
@@ -72,6 +73,7 @@ def prime_func(request):  # Return Dict object
         return {'message': 'Error while Authenticating keys', 'status': False}
 
     # Fetch current Trends
+    print("----- Fetching Trends -----")
     try:
         # List containing trends as dict objects
         current_trends_list = api.trends_place(id=India)[0]['trends']
@@ -81,6 +83,7 @@ def prime_func(request):  # Return Dict object
         prime_models.Log.objects.create(message='Error While Fetching Trends')
         return {'message': 'Error While Fetching Trends', 'status': False}
 
+    print("----- Processing Fetched Trends -----")
     for i in range(length_of_current_trends):
         current_trends_list[i]['name'] = deEmojify(current_trends_list[i]['name'])
         if current_trends_list[i]['name'][0] == '#':
@@ -149,6 +152,7 @@ def prime_func(request):  # Return Dict object
         trend_obj.save()
 
     # Delete Trends With No Tweets
+    print("----- Deleting Trends with no data -----")
     del_trends = list(prime_models.Trend.objects.all().prefetch_related('tweet_set'))
     for tmp_obj in del_trends:
         if ((len(tmp_obj.tweet_set.all()) == 0) or (

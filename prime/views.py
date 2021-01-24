@@ -1,7 +1,8 @@
+import time
 import prime.models as prime_models
 import prime.utils as prime_utils
 import prime.serializers as prime_serializers
-import mysite_config
+from mysite_config import foung_required_key, get_request_key
 from rest_framework.response import Response
 from rest_framework.generics import (ListAPIView, RetrieveAPIView, GenericAPIView)
 
@@ -13,13 +14,16 @@ from rest_framework.generics import (ListAPIView, RetrieveAPIView, GenericAPIVie
 class foung(GenericAPIView):
     # This API is called only through CRON
     def get(self, request, *args, **kwargs):
+        start_time_for_process = time.time()
         try:
-            if request.headers['Foung-Required-Key'] != mysite_config.foung_required_key:
+            if request.headers['Foung-Required-Key'] != foung_required_key:
                 return Response({'message': 'Authentication Failed', 'status': False})
         except KeyError:
             return Response({'message': 'Authentication Failed', 'status': False})
 
-        return Response(prime_utils.prime_func(request))
+        response_message, response_status = prime_utils.prime_func(request)
+        print("----- Total time to complete the process -----", time.time() - start_time_for_process)
+        return Response({'message': response_message, 'status': response_status})
 
 
 class GetTrend(ListAPIView, RetrieveAPIView):
@@ -71,7 +75,7 @@ class GetTrend(ListAPIView, RetrieveAPIView):
 
     def list(self, request, *args, **kwargs):
         try:
-            if request.headers['Get-Request-Key'] != mysite_config.get_request_key:
+            if request.headers['Get-Request-Key'] != get_request_key:
                 return Response({'message': 'Authentication Failed', 'status': False})
         except KeyError:
             return Response({'message': 'Authentication Failed', 'status': False})
@@ -96,7 +100,7 @@ class GetActiveTrend(ListAPIView):
 
     def list(self, request, *args, **kwargs):
         try:
-            if request.headers['Get-Request-Key'] != mysite_config.get_request_key:
+            if request.headers['Get-Request-Key'] != get_request_key:
                 return Response({'message': 'Authentication Failed', 'status': False})
         except KeyError:
             return Response({'message': 'Authentication Failed', 'status': False})
