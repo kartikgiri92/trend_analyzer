@@ -1,16 +1,13 @@
 from .base import *
 
-import mysite_config
-
 DEBUG = False
+ALLOWED_HOSTS = [
+    'trend-anaylzer-env.ksmsub4jne.ap-south-1.elasticbeanstalk.com',
+    'www.thetrendanalysis.com',
+    'thetrendanalysis.com'
+]
 
-SECRET_KEY = mysite_config.prod_keys['secret_key']
-
-ALLOWED_HOSTS = ['trend-anaylzer-env.ksmsub4jne.ap-south-1.elasticbeanstalk.com', 
-                'www.thetrendanalysis.com', 
-                'thetrendanalysis.com']
-
-if('RDS_HOSTNAME' in os.environ):
+if 'RDS_HOSTNAME' in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

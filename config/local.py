@@ -1,14 +1,9 @@
 from .base import *
 
-import mysite_config
-
 DEBUG = True
-
-SECRET_KEY = mysite_config.dev_keys['secret_key']
-
 ALLOWED_HOSTS = []
 
-if('RDS_HOSTNAME' in os.environ):
+if 'RDS_HOSTNAME' in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -23,10 +18,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': mysite_config.dev_keys['db_name'],
-            'USER': mysite_config.dev_keys['db_user'],
-            'PASSWORD': mysite_config.dev_keys['db_pass'],
-            'HOST': mysite_config.dev_keys['host'],
+            'NAME': "trend_analyzer",
+            'USER': "trend_analyzer",
+            'PASSWORD': "root1234",
+            'HOST': "localhost",
             'PORT': '3306',
         }
     }

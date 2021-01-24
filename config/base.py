@@ -1,5 +1,5 @@
 import os
-import mysite_config
+from mysite_config import django_secret_key, twitter_cred
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -78,7 +78,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-twitter_key = mysite_config.twitter_api_key
-twitter_secret_key = mysite_config.twitter_api_secret_key
+twitter_key = twitter_cred['twitter_api_key']
+twitter_secret_key = twitter_cred['twitter_api_secret_key']
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "staticfiles")]
+
+SECRET_KEY = django_secret_key
+ENV_TYPE = os.environ['ENV_TYPE']
