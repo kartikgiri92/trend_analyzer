@@ -18,7 +18,7 @@ container_commands:
 
 option_settings:
     aws:elasticbeanstalk:application:environment:
-        DJANGO_SETTINGS_MODULE: config.production
+        DJANGO_SETTINGS_MODULE: config.settings
 
 # Cron Commands
 
@@ -71,4 +71,4 @@ container_commands:
 
 option_settings:
     aws:elasticbeanstalk:application:environment:
-        DJANGO_SETTINGS_MODULE: config.production
+        DJANGO_SETTINGS_MODULE: config.settings
