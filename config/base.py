@@ -1,5 +1,5 @@
 import os
-import mysite_config
+from mysite_config import django_secret_key, twitter_cred
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -78,7 +78,21 @@ USE_L10N = True
 
 USE_TZ = True
 
-twitter_key = mysite_config.twitter_api_key
-twitter_secret_key = mysite_config.twitter_api_secret_key
+twitter_key = twitter_cred['twitter_api_key']
+twitter_secret_key = twitter_cred['twitter_api_secret_key']
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "staticfiles")]
+
+SECRET_KEY = django_secret_key
+
+if 'RDS_HOSTNAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
+    }
