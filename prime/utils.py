@@ -63,7 +63,6 @@ def data_preprocessing(input_txt):
 
 def prime_func(request):  # Return Dict object
     print("----- Entered Prime Function -----")
-    print("----- Authenticating cred from twitter -----")
     # Authenticating API keys
     try:
         auth = tweepy.AppAuthHandler(config_base.twitter_key, config_base.twitter_secret_key)
@@ -78,8 +77,10 @@ def prime_func(request):  # Return Dict object
         # List containing trends as dict objects
         current_trends_list = api.trends_place(id=India)[0]['trends']
         length_of_current_trends = len(current_trends_list)
+        print("----- Total Number of fetched Trends {} -----".format(length_of_current_trends))
 
     except tweepy.TweepError:
+        print("----- Exception occurred -> Error While Fetching Trends -----")
         prime_models.Log.objects.create(message='Error While Fetching Trends')
         return {'message': 'Error While Fetching Trends', 'status': False}
 
@@ -152,13 +153,14 @@ def prime_func(request):  # Return Dict object
         trend_obj.save()
 
     # Delete Trends With No Tweets
-    print("----- Deleting Trends with no data -----")
+    print("----- Deleting Trends with zero tweets or were last updated a day ago -----")
     del_trends = list(prime_models.Trend.objects.all().prefetch_related('tweet_set'))
     for tmp_obj in del_trends:
         if ((len(tmp_obj.tweet_set.all()) == 0) or (
                 (datetime.now(timezone('Asia/Kolkata')) - tmp_obj.last_updated).days > 0)):
             tmp_obj.delete()
 
+    print("----- Updating Trending Tweets -----")
     all_trends = list(
         prime_models.Trend.objects.all().order_by('last_updated', 'num_positive', 'num_negative', 'num_neutral'))
     length_all_trends = len(all_trends)
