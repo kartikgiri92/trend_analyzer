@@ -1,6 +1,6 @@
 from ..base import *
 
-deployment_type = os.environ.get("deployment_type", 'development')
+deployment_type = os.environ.get("deployment_type", 'production')
 print("***** {} *****".format(deployment_type))
 
 if deployment_type == "production":
