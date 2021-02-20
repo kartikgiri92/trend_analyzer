@@ -4,3 +4,14 @@ ALLOWED_HOSTS = [
     'www.thetrendanalysis.com',
     'thetrendanalysis.com'
 ]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "trend_analyzer",
+        'USER': "",
+        'PASSWORD': "",
+        'HOST': "db",
+        'PORT': '3306',
+    }
+}

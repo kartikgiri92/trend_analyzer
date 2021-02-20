@@ -7,7 +7,7 @@ DATABASES = {
         'NAME': "trend_analyzer",
         'USER': "trend_analyzer",
         'PASSWORD': "root1234",
-        'HOST': "localhost",
+        'HOST': "db",
         'PORT': '3306',
     }
 }
